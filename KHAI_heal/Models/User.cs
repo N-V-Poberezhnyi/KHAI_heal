@@ -22,17 +22,49 @@ namespace KHAI_heal.Models
 
         protected User(int id, string email, string password, string firstName, string lastName, string middleName, UserRole role)
         {
-            throw new NotImplementedException();
+            Id = id;
+            Email = email;
+            Password = password;
+            FirstName = firstName;
+            LastName = lastName;
+            MiddleName = middleName;
+            Role = role;
         }
 
         public virtual bool IsValid()
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(Email) || Email.Length < 3 || Email.Length > 25 || !Email.Contains("@"))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(Password) || Password.Length < 5 || Password.Length > 20)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(FirstName) || FirstName.Length < 2) return false;
+            if (string.IsNullOrWhiteSpace(LastName) || LastName.Length < 2) return false;
+            if (string.IsNullOrWhiteSpace(MiddleName) || MiddleName.Length < 2) return false;
+
+            return true;
         }
 
         public bool UpdateBaseProfile(string firstName, string lastName, string middleName)
         {
-            throw new NotImplementedException();
+            string oldFirstName = FirstName;
+            string oldLastName = LastName;
+            string oldMiddleName = MiddleName;
+
+            FirstName = firstName;
+            LastName = lastName;
+            MiddleName = middleName;
+
+            if (!IsValid())
+            {
+                FirstName = oldFirstName;
+                LastName = oldLastName;
+                MiddleName = oldMiddleName;
+                return false; // дані не валідні
+            }
+
+            return true;
         }
 
         public abstract string DisplayProfileInfo();

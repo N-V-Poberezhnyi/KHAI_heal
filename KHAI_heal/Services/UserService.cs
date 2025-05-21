@@ -17,67 +17,165 @@ namespace KHAI_heal.Services
         private readonly IJsonDataManager _jsonDataManager;
         public UserService(IJsonDataManager jsonDataManager)
         {
-            throw new NotImplementedException();
+            _jsonDataManager = jsonDataManager;
+
+            _users = _jsonDataManager.LoadUsers();
+
+            _nextUserId = _users.Any() ? _users.Max(u => u.Id) + 1 : 1;
         }
 
-        private int GetNextUserId() => throw new NotImplementedException();
+        private int GetNextUserId() => _nextUserId++;
 
-        private void SaveUsers() => throw new NotImplementedException();
+        private void SaveUsers() => _jsonDataManager.SaveUsers(_users);
 
         public void SaveUser(User user)
         {
-            throw new NotImplementedException();
+            var existingUser = _users.FirstOrDefault(u => u.Id == user.Id);
+            if (existingUser != null)
+            {
+                SaveUsers();
+            }
         }
 
         public User RegisterUser(string email, string password, string firstName, string lastName, string middleName, UserRole role)
         {
-            throw new NotImplementedException();
+            if (CheckIfEmailExists(email))
+            {
+                return null; // Користувач з такою поштою вже існує
+            }
+
+            int newId = GetNextUserId();
+            User newUser;
+
+            if (role == UserRole.Doctor)
+            {
+                newUser = new Doctor(newId, email, password, firstName, lastName, middleName, default, 0, 0, new List<TimeSpan>());
+            }
+            else // Пацієнт
+            {
+                newUser = new Patient(newId, email, password, firstName, lastName, middleName);
+            }
+            if (!newUser.IsValid())
+            {
+                return null;
+            }
+
+
+            _users.Add(newUser);
+            SaveUsers();
+            return newUser;
         }
 
         public User AuthenticateUser(string email, string password)
         {
-            throw new NotImplementedException();
+            var user = _users.FirstOrDefault(u => u.Email.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase) && u.Password == password);
+
+            if (user == null)
+            {
+                return null; // Невірний логін або пароль
+            }
+
+            return user;
         }
 
         public User GetUserById(int userId) => _users.FirstOrDefault(u => u.Id == userId);
 
         public bool UpdateUserProfile(int userId, string firstName, string lastName, string middleName)
         {
-            throw new NotImplementedException();
+            var user = GetUserById(userId);
+            if (user == null)
+                return false;
+
+            if (!user.UpdateBaseProfile(firstName, lastName, middleName))
+            {
+                return false;
+            }
+
+            SaveUsers();
+            return true;
         }
 
         public bool UpdateDoctorProfile(int doctorId, Specialization specialization, decimal price, int experience, List<TimeSpan> schedule)
         {
-            throw new NotImplementedException();
+            var doctor = _users.OfType<Doctor>().FirstOrDefault(d => d.Id == doctorId);
+            if (doctor == null)
+                return false;
+
+            var oldSpecialization = doctor.Specialization;
+            var oldPrice = doctor.Price;
+            var oldExperience = doctor.Experience;
+            var oldSchedule = doctor.Schedule;
+
+            doctor.Specialization = specialization;
+            doctor.Price = price;
+            doctor.Experience = experience;
+            doctor.Schedule = schedule ?? new List<TimeSpan>();
+
+            if (!doctor.IsValid())
+            {
+                doctor.Specialization = oldSpecialization;
+                doctor.Price = oldPrice;
+                doctor.Experience = oldExperience;
+                doctor.Schedule = oldSchedule;
+                return false; // Помилка валідації
+            }
+
+            SaveUsers();
+            return true;
         }
 
         public bool UpdateDoctorPublishedStatus(int doctorId, bool isPublished)
         {
-            throw new NotImplementedException();
+            var doctor = _users.OfType<Doctor>().FirstOrDefault(d => d.Id == doctorId);
+            if (doctor == null)
+                return false;
+
+            doctor.IsPublished = isPublished;
+
+            if (isPublished && !doctor.IsValid())
+            {
+                doctor.IsPublished = !isPublished;
+                return false;
+            }
+            SaveUsers();
+            return true;
         }
         public bool GetPublishedStatus(int doctorId)
         {
-            throw new NotImplementedException();
+            var doctor = _users.OfType<Doctor>().FirstOrDefault(d => d.Id == doctorId);
+            return doctor?.IsPublished ?? false;
         }
 
         public List<Doctor> GetAllDoctors()
         {
-            throw new NotImplementedException();
+            return _users.OfType<Doctor>().ToList();
         }
 
         public List<Doctor> FindDoctors(string query)
         {
-            throw new NotImplementedException();
+            List<Doctor> publishedDoctors = GetPublishedDoctors();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return publishedDoctors;
+            }
+
+            // Пошук за прізвищем або спеціальністю
+            string lowerQuery = query.Trim().ToLower();
+            return publishedDoctors
+                        .Where(d => (d.LastName != null && d.LastName.Trim().ToLower().Contains(lowerQuery)) ||
+                                    (d.Specialization.ToString().Trim().ToLower().Contains(lowerQuery))).ToList();
         }
 
         public List<Doctor> GetPublishedDoctors()
         {
-            throw new NotImplementedException();
+            return _users.OfType<Doctor>().Where(d => d.IsPublished).ToList();
         }
 
         public bool CheckIfEmailExists(string email)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            return _users.Any(u => u.Email.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
         }
     }
 }

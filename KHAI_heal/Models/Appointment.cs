@@ -17,20 +17,42 @@ namespace KHAI_heal.Models
         public AppointmentStatus Status { get; set; }
         public int DoctorId { get; set; }
         public int PatientId { get; set; }
+        [JsonIgnore]
+        public string DoctorName { get; set; }
+        [JsonIgnore]
+        public string PatientName { get; set; }
 
         public Appointment() { }
         public Appointment(int id, DateTime appointmentDateTime, int doctorId, int patientId)
         {
-            throw new NotImplementedException();
+            Id = id;
+            AppointmentDateTime = appointmentDateTime;
+            DoctorId = doctorId;
+            PatientId = patientId;
+            Status = AppointmentStatus.Planned;
         }
 
         public bool UpdateStatus(AppointmentStatus newStatus, bool isDoctor)
         {
-            throw new NotImplementedException();
+            if (isDoctor)
+            {
+                Status = newStatus;
+                return true;
+            }
+            else // Пацієнт
+            {
+                if (Status == AppointmentStatus.Planned && newStatus == AppointmentStatus.Cancelled)
+                {
+                    Status = newStatus;
+                    return true;
+                }
+                return false;
+            }
         }
         public bool IsPastAppointment()
         {
-            throw new NotImplementedException();
+            return AppointmentDateTime < DateTime.Now;
         }
     }
 }
+

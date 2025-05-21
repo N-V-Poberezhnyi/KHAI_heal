@@ -13,22 +13,22 @@ namespace KHAI_heal.Data
     {
         public List<User> LoadUsers()
         {
-            throw new NotImplementedException();
+            return JsonManager.LoadUsers();
         }
 
         public void SaveUsers(List<User> users)
         {
-            throw new NotImplementedException();
+            JsonManager.SaveUsers(users);
         }
 
         public List<Appointment> LoadAppointments()
         {
-            throw new NotImplementedException();
+            return JsonManager.LoadAppointments();
         }
 
         public void SaveAppointments(List<Appointment> appointments)
         {
-            throw new NotImplementedException();
+            JsonManager.SaveAppointments(appointments);
         }
     }
 }

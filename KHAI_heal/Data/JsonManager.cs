@@ -22,37 +22,118 @@ namespace KHAI_heal.Data
 
         private static string GetDataFolderPath()
         {
-            throw new NotImplementedException();
+            string executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+
+            string dataFolderPath = Path.Combine(executableDirectory, DataFolderName);
+
+            return dataFolderPath;
         }
 
         private static string GetActualUsersFilePath()
         {
-            throw new NotImplementedException();
+            string dataFolderPath = GetDataFolderPath();
+            string fileName = UsersFileNameOverride ?? UsersFileName;
+            return Path.Combine(dataFolderPath, fileName);
         }
 
         private static string GetActualAppointmentsFilePath()
         {
-            throw new NotImplementedException();
+            string dataFolderPath = GetDataFolderPath();
+
+            string fileName = AppointmentsFileNameOverride ?? AppointmentsFileName;
+            return Path.Combine(dataFolderPath, fileName);
         }
 
         public static void SaveUsers(List<User> users)
         {
-            throw new NotImplementedException();
+            string filePath = GetActualUsersFilePath();
+            string dataFolderPath = GetDataFolderPath();
+
+            try
+            {
+                if (!Directory.Exists(dataFolderPath))
+                {
+                    Directory.CreateDirectory(dataFolderPath);
+                }
+
+                string json = JsonConvert.SerializeObject(users, Formatting.Indented, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto // десеріалізація Patient/Doctor
+                });
+                File.WriteAllText(filePath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving users to JSON file '{filePath}': {ex.Message}");
+            }
         }
 
         public static List<User> LoadUsers()
         {
-            throw new NotImplementedException();
+            string filePath = GetActualUsersFilePath();
+
+            if (!File.Exists(filePath))
+            {
+                return new List<User>();
+            }
+
+            try
+            {
+                string json = File.ReadAllText(filePath);
+                var users = JsonConvert.DeserializeObject<List<User>>(json, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+                return users ?? new List<User>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка завантаження користувачів із файлу JSON '{filePath}': {ex.Message}");
+
+                return new List<User>();
+            }
         }
 
         public static void SaveAppointments(List<Appointment> appointments)
         {
-            throw new NotImplementedException();
+            string filePath = GetActualAppointmentsFilePath();
+            string dataFolderPath = GetDataFolderPath();
+
+            try
+            {
+                if (!Directory.Exists(dataFolderPath))
+                {
+                    Directory.CreateDirectory(dataFolderPath);
+                }
+
+                string json = JsonConvert.SerializeObject(appointments, Formatting.Indented);
+                File.WriteAllText(filePath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка збереження файлу у JSON '{filePath}': {ex.Message}");
+            }
         }
 
         public static List<Appointment> LoadAppointments()
         {
-            throw new NotImplementedException();
+            string filePath = GetActualAppointmentsFilePath();
+            if (!File.Exists(filePath))
+            {
+                return new List<Appointment>();
+            }
+            try
+            {
+                string json = File.ReadAllText(filePath);
+                var appointments = JsonConvert.DeserializeObject<List<Appointment>>(json);
+                return appointments ?? new List<Appointment>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при завантаженні файлу із JSON '{filePath}': {ex.Message}");
+                return new List<Appointment>();
+            }
         }
     }
 }

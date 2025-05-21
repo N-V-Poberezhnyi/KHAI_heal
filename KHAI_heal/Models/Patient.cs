@@ -11,27 +11,26 @@ namespace KHAI_heal.Models
 {
     public class Patient : User
     {
-        public List<int> AppointmentIds { get; set; }
+        public List<int> AppointmentIds { get; set; } = new List<int>();
 
         public Patient() : base()
         {
-            throw new NotImplementedException();
+            Role = UserRole.Patient;
         }
 
         public Patient(int id, string email, string password, string firstName, string lastName, string middleName)
             : base(id, email, password, firstName, lastName, middleName, UserRole.Patient)
         {
-
         }
 
         public override bool IsValid()
         {
-            throw new NotImplementedException();
+            return base.IsValid();
         }
 
         public override string DisplayProfileInfo()
         {
-            throw new NotImplementedException();
+            return $"Пацієнт: {LastName} {FirstName} {MiddleName}";
         }
     }
 }
