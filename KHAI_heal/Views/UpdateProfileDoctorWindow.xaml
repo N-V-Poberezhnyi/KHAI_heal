@@ -1,0 +1,50 @@
+﻿<Window x:Class="KHAI_heal.Views.UpdateProfileDoctorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KHAI_heal.Views"
+        xmlns:enums="clr-namespace:KHAI_heal.Enums"  mc:Ignorable="d"
+        Title="Редагування профілю лікаря" Height="650" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Редагувати профіль" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Прізвище:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="LastNameTextBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="Ім'я:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="FirstNameTextBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="По-батькові:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="MiddleNameTextBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="Спеціалізація:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <ComboBox x:Name="SpecializationComboBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="Ваш стаж (років):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="ExperienceTextBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="Ваша ціна прийому (грн):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="PriceTextBox" Margin="0,0,0,10" Padding="3"/>
+
+            <TextBlock Text="Ваш графік прийому (через кому, наприклад: 9:00,10:30,14:00):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="ScheduleTextBox" Margin="0,0,0,10" Padding="3" TextWrapping="Wrap" Height="60"/>
+
+        </StackPanel>
+
+        <Button Content="Зберегти зміни" Grid.Row="2" Margin="0,10,0,10" Padding="5" Click="SaveProfileButton_Click"/>
+
+        <TextBlock x:Name="ErrorTextBlock" Grid.Row="3"
+                   Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,10" TextAlignment="Center"/>
+
+    </Grid>
+</Window>
