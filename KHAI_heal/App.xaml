@@ -1,0 +1,8 @@
+﻿<Application x:Class="KHAI_heal.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:KHAI_heal">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
